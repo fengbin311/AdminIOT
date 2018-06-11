@@ -1,0 +1,253 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-solid box-default ">
+            <div class="box-header with-border">
+                <h3 class="box-title"><strong>{$device.title}</strong>设备下所有的数据流</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="box-group" id="accordion">
+                    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                    {foreach name="datastream" item="ds"}
+
+                    <div class="box box-default">
+                        <div class="box-header">
+                            <i class="fa fa-bar-chart"></i>
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#{$ds.id}">
+                                    {$ds.id}
+                                </a>
+                            </h4>
+                            <div>
+                                {present name="$ds.current_value"}
+                                <span>最新数据:<span>{$ds.current_value}</span></span>
+                                <span>&nbsp;&nbsp;更新时间：<span>{$ds.update_at}</span></span>
+                                {else /}
+                                <span>最新数据:<span>null</span></span>
+                                <span>&nbsp;&nbsp;更新时间：<span>null</span></span>
+                                {/present}
+                            </div>
+                        </div>
+                        <div id="{$ds.id}" data-dsid="#{$ds.id}" class="panel-collapse collapse" aria-expanded="false">
+                            <div class="box-body">
+
+                                <div class="col-md-12 " style="">
+                                    <div class="row data-legend">
+
+                                        <form class="legend-search col-md-12" data-parsley-validate="">
+
+                                            <div class="form-item">
+                                                <input placeholder="设备ID" name="did" id="did" value={$device.id} hidden>
+                                                <input placeholder="数据流ID" name="dsid" id="dsid" value={$ds.id} hidden>
+                                                <!--<input placeholder="数据流ID" name="limit" id="dsid" value=20 hidden>-->
+                                            </div>
+                                            <div class="form-item">
+                                                <label for="{$ds.id}-datepicker-start">查询时间: &nbsp;</label>
+                                                <input id="{$ds.id}-datepicker-start" name="start_time" type="text"
+                                                       required>
+
+                                                <label for="{$ds.id}-datepicker-end">&nbsp;至&nbsp;</label>
+                                                <input id="{$ds.id}-datepicker-end" name="end_time" type="text"
+                                                       required>
+                                            </div>
+                                            <div class="form-item">
+                                                <button class="button expand" id="datastream-search">查询</button>
+                                            </div>
+
+                                            <div class="form-item">
+                                                <button class="button expand" id="datastream-search-new">查看最新</button>
+                                            </div>
+
+                                            <label id="error_msg" style="color:red;display: none"></label>
+                                        </form>
+
+                                        <div class="col-md-12 legend-center legend-middle"
+                                             style="width: 100%;height: 300px" id="{$ds.id}-chart-1"></div>
+
+                                        <div class="col-md-12 page-control" style="display: none;">
+                                            <div class="row"><a href="javascript:void(0)"
+                                                                class="col-md-offset-3 col-md-3 col-sm-offset-2 col-sm-4  col-xs-offset-2 col-xs-4 text-right prev-page disabled"
+                                                <i class="icon-previous"></i>上一页</a> <a href="javascript:void(0)"
+                                                                                        class="col-md-3 col-sm-4 col-xs-4 next-page disabled">下一页<i
+                                                        class="icon-next"></i></a></div>
+                                        </div>
+
+                                        <div class="col-md-12 legend-null text-center" style="display: block;">
+                                            <div class="row">
+                                                <div class="col-md-12"><i class="icon-no-data"></i></div>
+                                                <!--<div class="col-md-12 j_legend_null">最近一小时内无数据更新</div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/foreach}
+
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+
+<script>
+    /*admin/device/data data function */
+    var admin_device_data_loading = false;
+    $(function () {
+        $('#accordion').on('shown.bs.collapse', function (e) {
+
+            //绑定日期控件
+            var datepicker_start = "#" + e.target.id + "-datepicker-start";
+            var datepicker_end = "#" + e.target.id + "-datepicker-end";
+            $(datepicker_start).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: "yy-mm-dd",
+                regional: "zh-CN",
+            });
+            $(datepicker_end).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: "yy-mm-dd",
+                regional: "zh-CN",
+            });
+
+            //创建morries对象，并绘制图表
+            var $target = $(e.target);
+            var morris_line;
+            morris_line = $target.data("morris_line");
+            if (typeof  morris_line == "undefined") {
+                var chart_ele = e.target.id + "-chart-1";
+                // LINE CHART
+                console.log("Morris line undefined");
+                var line = new Morris.Line({
+                    element: chart_ele,
+                    resize: true,
+                    xkey: 'at',
+                    ykeys: ['value'],
+                    labels: ['value'],
+                    lineColors: ['#3c8dbc'],
+                    hideHover: 'auto',
+                   parseTime:false,
+                    hoverCallback: function (index, options, default_content, row) {
+                        default_content="<div class='morris-hover-row-label'>"+ row.at+"</div><div class='morris-hover-point' style='color: #0b62a4'>"+row.value+"</div>";
+                        return default_content;
+                    },
+                });
+
+                $target.data("morris_line", line);
+                morris_line = line;
+            } else {
+                morris_line = $target.data("morris_line");
+            }
+
+            //处理查询按钮触发事件，触发后开始异步加载数据
+            $target.find("button").on("click", function () {
+                //阻止表单传统方式提交
+                $target.find("form").submit(function () {
+                    return false;
+                });
+                //调用parsley表单验证插件
+                var ret = $target.find("form").parsley().isValid();
+                if (!ret)
+                    return; //表单验证通不过
+                //定义cursor数组，用于上一页，下一页记录cursor历史位置
+                var cussor_history = [];
+                var loading = false;
+
+                //异步提交表单数据并加载数据
+                var url_raw = "getdatapoint?" + $target.find("form").serialize();
+                var ajax_getdps = function (url) {
+                    console.log(url);
+
+                    //异步加载数据
+                    $.getJSON(url)
+                        .done(function (ret) {
+                            admin_device_data_loading = false;
+
+                            //检查获取结果，如果失败，显示失败信息
+                            if (ret.errno == 1) {
+                                $target.find("#error_msg").html("&nbsp;" + "&nbsp;" + ret.errmsg);
+                                $target.find("#error_msg").css("display", "inline");
+                                return;
+                            } else
+                                $target.find("#error_msg").css("display", "none");
+
+                            var data = ret.data;
+                            var count = data.count;
+                            if (typeof count == "undefined" || count == 0)
+                                return;
+
+                            //已拿到历史数据
+                            morris_line.setData(data.datastreams[0].datapoints);
+                            //page control display enable
+                            $target.find(".page-control").css("display", "block");
+
+                            //判断获取到json数据里面cursor是否有定义，如果有定义，代表本次查询还有更多数据需要分批获取
+                            if (typeof  data.cursor == "undefined") {
+                                //console.log("undefined");
+                                $target.find(".next-page").addClass("disabled");
+                                $target.find(".next-page").off("click");
+                            } else {
+                                //还有数据可以获取，设置下一页操作有效（），否则下一页无效。
+                                //console.log("defined");
+                                $target.find(".next-page").removeClass("disabled");
+                                //重新绑定事件，以前click事件处理解绑，下一页操作上下文保留
+                                $target.find(".next-page").off("click");
+                                $target.find(".next-page").on("click", function () {
+                                    console.log("next page click");
+                                    //正在加载时，上一页，下一页操作无效
+                                    if (admin_device_data_loading)
+                                        return;
+                                    cussor_history.push(data.cursor);
+                                    console.log(cussor_history);
+                                    admin_device_data_loading = true;
+                                    ajax_getdps(url_raw + "&cursor=" + data.cursor);
+                                });
+                            }
+
+                            //判断cursor数组长度，> 0，则上一页操作有效，否则无效。
+                            if (cussor_history.length > 0) {
+                                $target.find(".prev-page").removeClass("disabled");
+                                //重新绑定事件，以前click事件处理解绑
+                                $target.find(".prev-page").off("click");
+                                $target.find(".prev-page").on("click", function () {
+                                    console.log("prev page click");
+                                    cussor_history.pop();
+                                    console.log(cussor_history);
+                                    //正在加载时，上一页，下一页操作无效
+                                    if (admin_device_data_loading)
+                                        return;
+
+                                    //开始加载数据
+                                    admin_device_data_loading = true;
+                                    if (cussor_history.length == 0)//栈空，则从第一页开始显示
+                                        ajax_getdps(url_raw);
+                                    else
+                                        ajax_getdps(url_raw + "&cursor=" + cussor_history[cussor_history.length - 1]);
+                                });
+
+
+                            } else {
+                                $target.find(".prev-page").addClass("disabled");
+                                $target.find(".prev-page").off("click");
+                            }
+                        })
+                        .fail(function (jqxhr, textStatus, error) {
+                            loading = false;
+
+                            var err = textStatus + ", " + error;
+                            console.log("Request Failed: " + err);
+                        });
+
+                }
+                ajax_getdps(url_raw);
+            });
+
+        });
+    });
+</script>

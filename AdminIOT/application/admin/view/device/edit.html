@@ -1,0 +1,34 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+
+            <form role="form" method="post" novalidate="">
+                <input type="number" name="device_id" hidden value="{$device_id}">
+                <input type="text" name="device_auth_info_origin" hidden value="{$device.auth_info}">
+
+                <div class="form-group">
+                    <label>设备接入协议:
+                        <small >MQTT协议</small>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="deviceName">设备名称:</label>
+                    <input type="text" data-parsley-maxlength="16" data-parsley-required="true" class="form-control" id="deviceName" name="device_name" value={$device.title} placeholder="设备名称" data-parsley-id="4">
+                </div>
+                <div class="form-group">
+                    <label for="deviceName">鉴权信息:</label>
+                    <input type="text" class="form-control" id="deviceAuth" name="device_auth" value={$device.auth_info} placeholder="鉴权信息" data-parsley-required="true" data-parsley-pattern="/^[a-zA-Z0-9\.\_]*$/i" data-parsley-maxlength="512" data-parsley-id="6">
+                </div>
+                <!-- 其它相同信息 -->
+                <div class="form-group">
+                    <label for="deviceName">设备描述:</label>
+                    <textarea class="form-control" id="device_desc" data-parsley-maxlength="512" name="device_desc" rows="5" placeholder="设备描述" data-parsley-id="13"></textarea>
+                </div>
+
+                {include file="template/action_footer" /}
+
+            </form>
+
+        </div>
+    </div>
+</div>

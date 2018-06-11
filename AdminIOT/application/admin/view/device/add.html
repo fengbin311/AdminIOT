@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-default">
+            <form role="form" novalidate="" method="post">
+            <div class="box-body">
+                    <div class="form-group">
+                        <label for="deviceName" class="icon-required">设备名称:</label>
+                        <input type="text" class="form-control" id="deviceName" name="device_name" required="" pattern="^.{1,16}$" data-parsley-pattern-message="设备名称最多设置16个字符" data-parsley-trigger="keyup" placeholder="设备名称" data-parsley-id="4">
+                    </div>
+                    <div class="form-group">
+                        <label for="deviceAuth" class="icon-required">鉴权信息:</label>
+                        <input type="text" class="form-control" id="deviceAuth" name="device_auth" data-parsley-required="true" data-parsley-pattern="/^[a-zA-Z0-9]{1,512}$/i" data-parsley-maxlength="512" placeholder="请输入自定义字符串" data-parsley-pattern-message="最多设置512个字母、数字或字母与数字组合的字符串" data-parsley-trigger="keyup" data-parsley-id="6">
+                        <label class="show-other-font">设备间不能设置相同的字符串，最多512个字母、数字或字母与数字组合的字符串。</label>
+                    </div>
+            </div>
+
+            {include file="template/action_footer" /}
+
+            </form>
+
+        </div>
+    </div>
+</div>

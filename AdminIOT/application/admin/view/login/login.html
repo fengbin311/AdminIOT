@@ -1,0 +1,163 @@
+<!--{__NOLAYOUT__}-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>登录</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="__STATIC__/css/login.min.css">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!--下面是自己添加,用来链接CSS文件=======================================================-->
+    <!--<link href="../../../../public/static/admin/css/login_back.css" type="text/css"rel="stylesheet"/>-->
+    <!--<link href="__STATIC__/css/login_back.css"  rel="stylesheet"/>-->
+    <!--====================================================================-->
+</head>
+<!--此处自己添加了背景图-->
+<!--<body class="hold-transition login-page" background="../../../../public/static/admin/img/background.jpg">-->
+<body class="hold-transition login-page" background="__STATIC__/img/background.jpg">
+<div class="login-box">
+    <div class="login-logo">
+        <a href="../../index2.html"><b>BMS</b>后台管理系统</a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg">登入账号进入后台</p>
+        {if $Think.session.error_message}
+        {include file="template/loginerror" /}
+        {/if}
+
+        <form action="" method="post" onsubmit="doSumit()" data-parsley-validate>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group has-feedback">
+                        <input id="user_name" name="user_name" type="text" class="form-control" required
+                               data-parsley-length="[1, 16]" data-parsley-trigger="blur" placeholder="帐号">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group has-feedback">
+                        <input name="password" type="password" class="form-control" required
+                               data-parsley-length="[1, 16]" data-parsley-trigger="blur" placeholder="密码">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group has-feedback">
+                        <img id="captcha_img" src="{:captcha_src()}" alt="验证码" onclick="refreshCaptcha()">
+                        <a href="javascript:refreshCaptcha()" style="margin-left: 10px">点击刷新</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="captcha" id="captcha" class="form-control" required
+                               data-parsley-trigger="blur" placeholder="验证码">
+                        <span class="glyphicon glyphicon-random form-control-feedback"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-8">
+                    <div class="form-group ">
+                        <div class="checkbox">
+                            <label id="remember_me">
+                                <input id="remember_checkbox" type="checkbox"> 记住我
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-4">
+                    <div class="form-group " style="text-align: right">
+                        <input placeholder="记住密码" hidden name="is_remember" id="is_remember" value="0">
+                        {:token()}
+                        <a href="/passport/find" class="forget-pwd" target="_blank">忘记密码</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group has-feedback">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat" id="login_button">登&nbsp;&nbsp;&nbsp;录</button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /.login-box -->
+<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<!--<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+<script src="https://cdn.bootcss.com/parsley.js/2.7.0/parsley.min.js"></script>
+
+<script>
+    Parsley.addMessages('zh-cn', {
+        defaultMessage: "不正确的值",
+        type: {
+            email:        "请输入一个有效的电子邮箱地址",
+            url:          "请输入一个有效的链接",
+            number:       "请输入正确的数字",
+            integer:      "请输入正确的整数",
+            digits:       "请输入正确的号码",
+            alphanum:     "请输入字母或数字"
+        },
+        notblank:       "请输入值",
+        required:       "必填项",
+        pattern:        "格式不正确",
+        min:            "输入值请大于或等于 %s",
+        max:            "输入值请小于或等于 %s",
+        range:          "输入值应该在 %s 到 %s 之间",
+        minlength:      "请输入至少 %s 个字符",
+        maxlength:      "请输入至多 %s 个字符",
+        length:         "字符长度应该在 %s 到 %s 之间",
+        mincheck:       "请至少选择 %s 个选项",
+        maxcheck:       "请选择不超过 %s 个选项",
+        check:          "请选择 %s 到 %s 个选项",
+        equalto:        "输入值不同"
+    });
+
+    Parsley.setLocale('zh-cn');
+
+    function doSumit() {
+        if ($('#remember_checkbox').prop('checked')) {
+            $('#is_remember').val(1);
+        } else {
+            $('#is_remember').val(0);
+        }
+    }
+
+    function refreshCaptcha() {
+        var ts = Date.parse(new Date()) / 1000;
+        $("#captcha_img").attr('src', "{:captcha_src()}"+"?id=" + ts);
+    }
+
+    $(function () {
+        $("#user_name").focus();
+    });
+</script>
+
+
+</body>
+</html>

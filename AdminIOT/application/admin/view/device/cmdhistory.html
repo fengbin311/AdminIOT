@@ -1,0 +1,93 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="box">
+			<div class="box-body">
+				<form class="form-inline" name="searchForm" id="searchForm"
+					action="" method="GET">
+
+					<div class="form-group">
+						<input type="text" value="{$keywords ? $keywords : '' ;}"
+							name="keywords" id="keywords" class="form-control"
+							placeholder="设备ID">
+					</div>
+
+					<div class="form-group">
+						<button class="btn btn-primary" type="submit">
+							<i class="fa fa-search"></i> 查询
+						</button>
+					</div>
+					<div class="form-group">
+						<button onclick="clear_form()" class="btn btn-default"
+							type="button">
+							<i class="fa  fa-eraser"></i> 清空查询
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box">
+			<!--数据列表页头部-->
+			{include file="template/data_header2" /}
+			<!-- /.box-header -->
+
+			<div class="box-body table-responsive">
+				<table id="datalist"
+					class="table table-hover table-bordered datatable" width="100%">
+					<thead>
+						<tr class="show-datatable-list-title">
+							<th>命令下发时间</th>
+							<th>设备ID</th>
+							<th>命令内容</th>
+							<th>执行状态</th>
+							<th>响应结果</th>
+							<th>响应时间</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						{foreach name="lists" item="cmd"}
+						<tr>
+
+							<td>{$cmd.sndtime}</td>
+							<td>{$cmd.did}</td>
+							<td>{$cmd.cmd}</td>
+							<td>{$cmd.status}</td> 
+							
+							{notempty  name="$cmd.resp"}
+							<td>{$cmd.resp}</td>
+							{else /}
+							<td>---</td>
+							{/notempty}
+							
+							{notempty name="$cmd.rcvtime"}
+							<td>{$cmd.rcvtime}</td> 
+							{else /}
+							<td>---</td>
+							{/notempty}
+
+						</tr>
+						{/foreach}
+
+
+					</tbody>
+				</table>
+			</div>
+			<!-- /.box-body -->
+			<div class="box-footer">
+				<div>
+
+					<div class="dataTables_paginate paging_simple_numbers">
+						{$page}</div>
+				</div>
+			</div>
+		</div>
+		<!-- /.box -->
+	</div>
+</div>
+
+

@@ -1,0 +1,63 @@
+<div class="modal fade " id="device-send-command-dialog" tabindex="-1" role="dialog" data-backdrop="false"
+     aria-labelledby="myModalLabel" style="display: none; padding-right: 17px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header"><h4 class="modal-title">给设备下发命令</h4></div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-6">
+                            <div class="send-command-dialog">
+                                <form role="form" class=" dialog-form" data-parsley-validate>
+                                    <div class="form-group">
+                                        <label for="sms" class="icon-required">命令内容:</label>
+                                        <textarea  class="form-control" id="sms" name="sms"
+                                                   data-parsley-length="[1, 40]"  data-parsley-trigger="blur"  placeholder="请输入命令内容"  required></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" name="did" value="">
+                                        <input type="button" class="button pull-left" id="device-send-comand-button" value="发送命令">
+                                        <div class="checkbox">
+                                            <label ><input id="device-led-checkbox" type="checkbox"> LED开关 </label>
+                                            <label ><input id="device-alert-checkbox" type="checkbox"> 警报开关 </label>
+                                        </div>
+
+                                        <!--<a href="javascrit:void(0);" class="btn btn-default " id="send-comand-button">-->
+                                        <!--发送命令-->
+                                        <!--</a>-->
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="sms" class="icon-required">命令响应:</label>
+                                    <textarea  class="form-control" id="sms-reply" name="sms-reply" disabled="disabled"
+                                               placeholder=""></textarea>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn    btn-default">关闭</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,383 @@
+<div class="row">
+
+
+    <!-- ./col -->
+
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-aqua">
+            <div class="inner">
+                <h3>{$device_total_count}</h3>
+                <p>BMS设备总数</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-industry"></i>
+            </div>
+            <a href="{:url('admin/device/index')}" class="small-box-footer">更多<i
+                    class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3>{$device_online_count}</h3>
+                <p>BMS在线设备总数</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-industry"></i>
+            </div>
+            <a href="{:url('admin/device/index')}" class="small-box-footer">更多<i
+                    class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box  bg-yellow">
+            <div class="inner">
+                <h3>{$device_offline_count}</h3>
+                <p>BMS离线设备总数</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-industry"></i>
+            </div>
+            <a href="{:url('admin/device/index')}" class="small-box-footer">更多<i
+                    class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box  bg-red">
+            <div class="inner">
+                <h3>{$admin_trigger_log_count}</h3>
+                <p>告警事件</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-bell"></i>
+            </div>
+            <a href="{:url('admin/alert/index')}" class="small-box-footer">更多<i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box  bg-lime">
+            <div class="inner">
+                <h3>{$adminuser_count}</h3>
+                <p>后台用户</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-user"></i>
+            </div>
+            <a href="{:url('admin/user/index')}" class="small-box-footer">更多<i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-light-blue">
+            <div class="inner">
+                <h3>{$admin_log_count}</h3>
+
+                <p>操作日志</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-keyboard-o"></i>
+            </div>
+            <a href="{:url('admin/user/log')}" class="small-box-footer">更多<i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+
+</div>
+
+
+<h2 class="page-header">BMS设备分布</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <!-- Map box -->
+        <div class="box box-solid bg-light-blue-gradient">
+            <!-- box header -->
+            <div class="box-header">
+                <i class="fa fa-map-marker"></i>
+                <h3 class="box-title">
+                    BMS设备位置分布
+                </h3>
+            </div>
+            <div class="box-body">
+                <div id="bdmap">网络原因，地图未显示，请尝试手动刷新一下网页</div>
+            </div>
+
+            <!-- box footer -->
+            <div class=" box-footer no-border">
+                <div class="row">
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                        <div id="sparkline-1"></div>
+                        <div class="knob-label">Visitors</div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                        <div id="sparkline-2"></div>
+                        <div class="knob-label">Online</div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-xs-4 text-center">
+                        <div id="sparkline-3"></div>
+                        <div class="knob-label">Exists</div>
+                    </div>
+                    <!-- ./col -->
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <!-- Custom tabs (Charts with tabs)-->
+        <div class="nav-tabs-custom">
+            <!-- Tabs within a box -->
+            <ul class="nav nav-tabs pull-right">
+                <li class="active"><a href="#revenue-chart" data-toggle="tab">Area</a></li>
+            </ul>
+            <div class="tab-content no-padding">
+                <!-- Morris chart - Sales -->
+                <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;"></div>
+
+            </div>
+        </div>
+        <!-- /.nav-tabs-custom -->
+    </div>
+</div>
+
+<script>
+    /*admin/stat/index  map function*/
+    //百度地图API功能
+    function loadJScript() {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://api.map.baidu.com/api?v=2.0&ak=02jjq8QaGozO8u2cO41Fw4Ku9GUn5iqG&callback=init";
+        document.body.appendChild(script);
+    }
+
+    function load_mapdata_and_render(map, geoc, cur_page) {
+//请求设备地图数据
+        console.log("开始ajax请求数据。。。。。当前页");
+        console.log(cur_page);
+        $.getJSON("mapdata", {"cur_page": cur_page})
+            .done(function (mapdata) {
+                console.log(mapdata);
+                $.each(mapdata.devices, function (i, dev) {
+
+                    if (typeof dev.location == "undefined")
+                        return true;
+
+                    var point = new BMap.Point(dev.location.lon, dev.location.lat);
+                    var marker = new BMap.Marker(point);
+
+                    if (dev.online)
+                        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+//绑定事件
+                    marker.addEventListener("click", function (e) {
+                        geoc.getLocation(e.point, function (rs) {
+                            var status;
+                            if (dev.online)
+                                status = '在线';
+                            else
+                                status = '离线';
+
+                            var content = '<div>' +
+                                '<p>' + '<b>设备名称:</b>' + dev.title + '</p>' +
+                                '<p>' + '<b>设备id:</b>' + dev.id + '</p>' +
+                                '<p>' + '<b>设备状态:</b>' + status + '</p>' +
+                                '<p>' + '<b>设备位置:</b>' + rs.address + '</p>' +
+                                '</div>';
+
+//创建信息窗口
+                            var opts = {
+                                width: 200,     // 信息窗口宽度
+                                height: 150,     // 信息窗口高度
+                                title: '<h4 style="color: #00a65a"><strong>设备详情</strong></h4>',  // 信息窗口标题
+                            }
+                            var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+                            map.openInfoWindow(infoWindow, e.point);      // 打开信息窗口
+                        });
+                    });
+// alert(address);
+                    map.addOverlay(marker);
+                });//end each
+
+                if (mapdata.has_more) {
+//ajax 获取下一页数据
+                    setTimeout(load_mapdata_and_render(map, geoc, mapdata.page + 1), 2);
+                }
+
+
+            })
+            .fail(function (jqxhr, textStatus, error) {
+                var err = textStatus + ", " + error;
+                console.log("Request Failed: " + err);
+            });
+    }
+
+    function init() {
+        var map = new BMap.Map("bdmap");          // 创建地图实例
+        map.setMapStyle({
+            styleJson: [
+                {
+                    "featureType": "land",
+                    "elementType": "geometry",
+                    "stylers": {
+                        "color": "#e7f7fc"
+                    }
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#96b5d6"
+                    }
+                },
+                {
+                    "featureType": "green",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#b0d3dd"
+                    }
+                },
+                {
+                    "featureType": "highway",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                        "color": "#a6cfcf"
+                    }
+                },
+                {
+                    "featureType": "highway",
+                    "elementType": "geometry.stroke",
+                    "stylers": {
+                        "color": "#7dabb3"
+                    }
+                },
+                {
+                    "featureType": "arterial",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                        "color": "#e7f7fc"
+                    }
+                },
+                {
+                    "featureType": "arterial",
+                    "elementType": "geometry.stroke",
+                    "stylers": {
+                        "color": "#b0d5d4"
+                    }
+                },
+                {
+                    "featureType": "local",
+                    "elementType": "labels.text.fill",
+                    "stylers": {
+                        "color": "#7a959a"
+                    }
+                },
+                {
+                    "featureType": "local",
+                    "elementType": "labels.text.stroke",
+                    "stylers": {
+                        "color": "#d6e4e5"
+                    }
+                },
+                {
+                    "featureType": "arterial",
+                    "elementType": "labels.text.fill",
+                    "stylers": {
+                        "color": "#374a46"
+                    }
+                },
+                {
+                    "featureType": "highway",
+                    "elementType": "labels.text.fill",
+                    "stylers": {
+                        "color": "#374a46"
+                    }
+                },
+                {
+                    "featureType": "highway",
+                    "elementType": "labels.text.stroke",
+                    "stylers": {
+                        "color": "#e9eeed"
+                    }
+                }
+            ]
+        });
+
+        var point = new BMap.Point(116.404, 39.915);  // 创建点坐标
+        map.centerAndZoom("西宁", 5);              // 初始化地图，设置中心点坐标和地图级别
+        map.setMinZoom(5);
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+        var geoc = new BMap.Geocoder();
+
+
+        load_mapdata_and_render(map, geoc, 1);
+
+        setTimeout(function () {
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.ScaleControl());
+
+            var size = new BMap.Size(20, 30);
+            map.addControl(new BMap.CityListControl({
+                anchor: BMAP_ANCHOR_TOP_RIGHT,
+                offset: size,
+// 切换城市之间事件
+// onChangeBefore: function(){
+//    alert('before');
+// },
+// 切换城市之后事件
+// onChangeAfter:function(){
+//   alert('after');
+// }
+            }));
+
+        }, 1000);
+
+    }
+
+    window.onload = loadJScript;  //异步加载地图
+
+    $(function () {
+        /* Morris.js Charts */
+// Sales chart
+        var area = new Morris.Area({
+            element: 'revenue-chart',
+            resize: true,
+            data: [
+                {y: '2018 Q1', item1: 2666, item2: 2666},
+                {y: '2018 Q2', item1: 2778, item2: 2294},
+                {y: '2018 Q3', item1: 4912, item2: 1969},
+                {y: '2018 Q4', item1: 3767, item2: 3597},
+                // {y: '2019 Q1', item1: 6810, item2: 1914},
+                // {y: '2016 Q2', item1: 5670, item2: 4293},
+                // {y: '2016 Q3', item1: 4820, item2: 3795},
+                // {y: '2016 Q4', item1: 15073, item2: 5967},
+                // {y: '2017 Q1', item1: 10687, item2: 4460},
+                // {y: '2017 Q2', item1: 8432, item2: 5713}
+            ],
+            xkey: 'y',
+            ykeys: ['item1', 'item2'],
+            labels: ['Item 1', 'Item 2'],
+            lineColors: ['#a0d0e0', '#3c8dbc'],
+            hideHover: 'auto'
+        });
+
+
+// Fix for charts under tabs
+        $('.nav-tabs-custom ul.nav a').on('shown.bs.tab', function () {
+            area.redraw();
+        });
+
+    });
+</script>

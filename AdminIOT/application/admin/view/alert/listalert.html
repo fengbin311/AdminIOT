@@ -1,0 +1,42 @@
+
+<table>
+
+<tbody>
+{foreach name="lists" item="list"}
+<tr>
+    <td>{:htmlspecialchars($list.trig_id)}</td>
+    <td>{:htmlspecialchars($list.type)}</td>
+    <td>{:htmlspecialchars($list.threshold)}</td>
+
+
+    <td>{:htmlspecialchars($list.dev_id)}</td>
+
+    {if condition="$list.dev_online eq true "}
+    <td class="show-device-online-status">在线</td>
+    {else /}
+    <td>离线</td>
+    {/if}
+
+
+    <td>{:htmlspecialchars($list.ds_id)}</td>
+    <td>{:htmlspecialchars($list.time)}</td>
+    <td>{:htmlspecialchars($list.value)}</td>
+    <td>
+        <a href="#" class="btn btn-default btn-sm " onclick="device_send_command({$list.dev_id})">
+            <i class="fa fa-wrench"></i>
+            立即处理
+        </a>
+    </td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+
+
+<div class="box-footer">
+    <div>
+        <div class="dataTables_paginate paging_simple_numbers">
+            {$page}
+        </div>
+    </div>
+</div>

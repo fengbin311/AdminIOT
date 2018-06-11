@@ -1,0 +1,90 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">{$web_data['web_title']}</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form role="form" action="" enctype="multipart/form-data" method="post" data-parsley-validate>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="trigger_title">触发器名称</label>
+                        <input type="text" name="trigger_title" id="trigger_title"
+                               value="{$Think.session.form_info.trigger_title|default=''}" class="form-control"
+                               placeholder="请输入触发器名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trigger_device_range_all" style="display:block;">触发器绑定到设备范围</label>
+                        <input type="radio" name="trigger_device_range_all" value=1 checked>绑定全部设备
+                    </div>
+                    <div class="form-group">
+                        <label for="trigger_ds_id" style="display: block">数据流名称</label>
+                        <!--<input type="text" id="trigger_ds_id" name="trigger_ds_id"  data-parsley-maxlength="32"  value="{$Think.session.form_info.trigger_ds_id|default=''}"  class="form-control"-->
+                        <!--placeholder="请输入数据流名称" required>-->
+
+                        <select class="form-control" name="trigger_ds_id" id="trigger_ds_id">
+                            {foreach name="dslist" item="ds"}
+                            <option value={$ds}>{$ds}</option>
+                            {/foreach}
+                        </select>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="trigger_threshold">触发条件</label>
+                        <span style="display:block">当控制的设备数据流值</span>
+                        <select class="form-control" name="trigger_type" id="trigger_type_select"  style="display:inline-block">
+                        <option value=">">></option>
+                        <option value=">=">>=</option>
+                        <option value="<"><</option>
+                        <option value="<="><=</option>
+                        <option value="==">==</option>
+                        <option value="change">change</option>
+                        </select>
+
+                           <input type="text" class="form-control" id="trigger_threshold" name="trigger_threshold"
+                               placeholder="数据值" value="{$Think.session.form_info.trigger_threshold|default=''}"
+                               required style="display:inline-block" />
+
+
+
+
+
+
+                        <span style=" clear:both;display: block">触发告警</span>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                {include file="template/action_footer" /}
+
+
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+
+        $("#trigger_ds_id").val('{$Think.session.form_info.trigger_ds_id|default=\'\'}');
+        $("#trigger_type_select").val('{$Think.session.form_info.trigger_type|default=\'\'}');
+
+        if( $("#trigger_type_select").val() == "change"){
+            $("#trigger_threshold").prop("disabled",true);
+            $("#trigger_threshold").prop("required",false);
+            $("#trigger_threshold").val("");
+        }
+
+        $("#trigger_type_select").on("change",function(){
+            if( $(this).val() == "change"){
+                $("#trigger_threshold").prop("disabled",true);
+                $("#trigger_threshold").prop("required",false);
+                $("#trigger_threshold").val("");
+            }else{
+                $("#trigger_threshold").prop("disabled",false);
+                $("#trigger_threshold").prop("required",true);
+            }
+        });
+    });
+
+
+</script>

@@ -1,0 +1,92 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">{$web_data['web_title']}</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form role="form" action="" method="post" enctype="multipart/form-data">
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label for="trigger_title">触发器名称</label>
+                        <input type="text" name="trigger_title" id="trigger_title" value="{$trigger.title}"
+                               class="form-control" placeholder="请输入触发器名称" required>
+                    </div>
+
+
+                    <!--<div class="form-group">-->
+                    <!--<label for="trigger_ds_id">数据流名称</label>-->
+                    <!--<input type="text" id="trigger_ds_id" name="trigger_ds_id"  data-parsley-maxlength="32"  value="{$trigger.ds_id}"  class="form-control"-->
+                    <!--placeholder="请输入数据流名称" required>-->
+                    <!--</div>-->
+
+                    <div class="form-group">
+                        <label for="trigger_ds_id" style="display: block">数据流名称</label>
+                        <!--<input type="text" id="trigger_ds_id" name="trigger_ds_id"  data-parsley-maxlength="32"  value="{$Think.session.form_info.trigger_ds_id|default=''}"  class="form-control"-->
+                        <!--placeholder="请输入数据流名称" required>-->
+
+                        <select class="form-control" name="trigger_ds_id" id="trigger_ds_id">
+                            {foreach name="dslist" item="ds"}
+                            <option value={$ds}>{$ds}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label  for="trigger_threshold">触发条件</label>
+                        <span style="display:block" >当控制的设备数据流值</span>
+                        <select class="form-control " name="trigger_type" id="trigger_type_select"
+                                style="display:inline">
+                            <option value=">" >></option>
+                            <option value=">=">>=</option>
+                            <option value="<" ><</option>
+                            <option value="<=" ><=</option>
+                            <option value="==" >==</option>
+                            <option value="change">change</option>
+                        </select>
+
+                        {if condition="$trigger.type eq 'change' "}
+                        <input type="text" class=" form-control " id="trigger_threshold" name="trigger_threshold"
+                               placeholder="数据值" value="" style="display:inline" />
+                        {else /}
+                        <input type="text" class=" form-control " id="trigger_threshold" name="trigger_threshold"
+                               placeholder="数据值" value="{$trigger.threshold|default=''}"  style="display:inline" required/>
+                        {/if}
+                        <span >触发告警</span>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+
+                {include file="template/action_footer" /}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+$(function () {
+
+    $("#trigger_ds_id").val('{$trigger.ds_id}');
+    $("#trigger_type_select").val('{$trigger.type}');
+
+    if( $("#trigger_type_select").val() == "change"){
+        $("#trigger_threshold").prop("disabled",true);
+        $("#trigger_threshold").val("");
+    }
+
+    $("#trigger_type_select").on("change",function(){
+        if( $(this).val() == "change"){
+            $("#trigger_threshold").prop("disabled",true);
+            $("#trigger_threshold").val("");
+        }else{
+            $("#trigger_threshold").prop("disabled",false);
+        }
+    });
+});
+</script>

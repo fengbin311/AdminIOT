@@ -1,0 +1,5 @@
+/*此处为添加的背景图*/
+.body{
+    /*background-image: url("../img/background.jpg");*/
+    background-size: auto 2000px;
+}

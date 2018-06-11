@@ -1,0 +1,12 @@
+.project
+.idea
+*.bak
+.buildpath
+.settings/
+runtime
+app_logs/
+thinkphp/
+vendor/
+adminlogs/
+backup/
+dbbackup/

@@ -1,0 +1,187 @@
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">当前触发器信息</h3>
+            </div>
+
+            <div class="box-body table-responsive">
+                <table id="datalist" class="table table-hover table-bordered datatable" width="100%">
+                    <thead>
+                    <tr class="show-datatable-list-title">
+                        <th>触发器ID</th>
+                        <th>触发器名称</th>
+                        <th>触发条件</th>
+                        <th>控制设备参数</th>
+                        <th>创建时间</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr>
+                        <td>{$trigger.id}</td>
+                        <td>{$trigger.title}</td>
+                        {present name="$trigger.threshold"}
+                        <td>{$trigger.type.$trigger.threshold}</td>
+                        {else /}
+                        <td>{$trigger.type}</td>
+                        {/present}
+
+                        <td>{$trigger.ds_id}</td>
+                        <td>{$trigger.create_time}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">当前触发器设备关联情况</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box">
+                            <div class="box-body">
+                                <form class="form-inline" name="searchForm" id="searchForm" action="" method="GET">
+
+                                    <div class="form-group">
+                                        <input type="text" value="{$keywords ? $keywords : '' ;}"
+                                               name="keywords" id="keywords" class="form-control"
+                                               placeholder="设备ID/设备名称（左匹配）">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> 查询
+                                        </button>
+                                    </div>
+                                    <div class="form-group">
+                                        <button onclick="clear_form()" class="btn btn-default" type="button"><i
+                                                class="fa  fa-eraser"></i> 清空查询
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box">
+                            <!--数据列表页头部-->
+                            <div class="box-header with-border">
+                                <h3 class="box-title">{$web_data['web_title']}</h3>
+                                {if isset($total)}
+                                共<span style="font-size: 18px"><strong>{$total}</strong></span>个设备,其中已关联<strong>{$related_total}</strong>个设备,还有<strong>{$total-$related_total}</strong>个设备未关联
+                                {/if}
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-header"><a data-toggle="modal" data-target="#modal"
+                                                       class="btn btn-default btn-sm margin" title=""
+                                                       onclick="modal_do_multi_deal('{:url($web_data['do_url'].'reladd',['tid'=>$tid])}','did')">
+                                <i class="fa fa-plus"></i>
+                                批量关联
+                            </a></div>
+
+                            <div class="box-body table-responsive">
+                                <table id="datalist" class="table table-hover table-bordered datatable" width="100%">
+                                    <thead>
+                                    <tr class="show-datatable-list-title">
+                                        <th><input type="checkbox" onclick="check_all(this)" class="checkbox"
+                                                   placeholder="全选/取消"></th>
+                                        <th>设备ID</th>
+                                        <th>设备名称</th>
+                                        <th>设备Tag</th>
+                                        <th>设备创建时间</th>
+                                        <th>关联状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {foreach name="lists" item="list"}
+                                    {if condition="$list.status eq '已关联' "}
+                                    <tr class="success">
+                                        <td></td>
+                                        {else /}
+                                    <tr>
+                                        <td><input type="checkbox" onclick="check_this(this)" name="data-checkbox"
+                                                   data-id="{$list.id}" class="checkbox data-list-check"
+                                                   value="{$list.id}" placeholder="选择/取消"></td>
+                                        {/if}
+
+                                        <td>{$list.id}</td>
+                                        <td>{$list.title}</td>
+                                        {present name="$list.tags"}
+                                        <td>{:implode(',',$list.tags)}</td>
+                                        {else /}
+                                        <td></td>
+                                        {/present}
+
+
+                                        <td>{$list.create_time}</td>
+                                        <td>{$list.status}</td>
+
+                                        {if condition="$list.status eq '未关联' "}
+                                        <td>
+                                            <a data-toggle="modal" data-target="#modal"
+                                               class="btn btn-default btn-sm "
+                                               title="添加关联"
+                                               onclick="modal_do_single_deal('{:url($web_data['do_url'].'reladd',['tid'=>$tid])}' ,'did', {$list.id})">
+                                                <i class="fa fa-plus"></i>
+                                                关联
+                                            </a>
+                                        </td>
+
+                                        {else /}
+
+                                        <td>
+                                            <!--<a data-toggle="modal" data-target="" disabled="true"-->
+                                               <!--class="btn btn-default btn-sm margin"-->
+                                               <!--title="添加关联" onclick="return false;">-->
+                                                <!--<i class="fa fa-plus"></i>-->
+                                                <!--关联-->
+                                            <!--</a>-->
+                                        </td>
+
+                                        {/if}
+
+                                    </tr>
+                                    {/foreach}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <!--<div>-->
+
+                                    <div class="dataTables_paginate paging_simple_numbers" style="display: inline-block">
+                                        {$page}
+                                    </div>
+
+                                {include file="template/action_back" /}
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+

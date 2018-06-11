@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+Options -Indexes +FollowSymlinks -Multiviews
+RewriteEngine on
+
+#RewriteCond %{SERVER_PORT} !^443$
+#RewriteRule (.*) https://%{SERVER_NAME}/$1  [R,L]
+
+RewriteCond %{REQUEST_URI}   news/meta
+RewriteRule ^news/meta/(.*) http://%{SERVER_NAME}/static/index/img/meta/$1  [R,L]
+
+RewriteCond %{REQUEST_URI}   modules/meta
+RewriteRule ^modules/meta/(.*) http://%{SERVER_NAME}/static/index/img/meta/$1  [R,L]
+
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
+</IfModule>

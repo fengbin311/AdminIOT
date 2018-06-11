@@ -1,0 +1,169 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-body">
+                <form class="form-inline" name="searchForm" id="searchForm" action="" method="GET">
+
+                    <div class="form-group">
+                        <input type="text" value="{$keywords ? $keywords : '' ;}"
+                               name="keywords" id="keywords" class="form-control" placeholder="设备ID/触发器ID">
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-default" id="alert-search"><i class="fa fa-search"></i> 查询
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-default" id="alert-clear-search" type="button"><i
+                                class="fa  fa-eraser"></i> 清空查询
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="box" id="j-alert-box">
+            <!--数据列表页头部-->
+            {include file="template/data_header2" /}
+            <!-- /.box-header -->
+            <div class="box-body table-responsive ">
+                <table id="j-alert-table" class="table table-hover table-bordered datatable" width="100%">
+                    <thead>
+                    <tr class="show-datatable-list-title">
+                        <th>触发器ID</th>
+                        <th>触发类型</th>
+                        <th>触发阈值</th>
+                        <th>设备ID</th>
+                        <th>设备状态</th>
+                        <th>数据流ID</th>
+                        <th>触发时间</th>
+                        <th>触发值</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+
+                    <!--insert tbody here-->
+
+
+                </table>
+
+                <!--<div id="load-cloud-data-error" style="text-align: center"><span>网络数据加载失败</span></div>-->
+
+            </div>
+
+        </div>
+        <!-- /.box -->
+        <!--insert box-footer here-->
+
+    </div>
+</div>
+{include file="template/device_send_comand_modal" /}
+
+
+<script>
+
+    var admin_alert_timer = null;
+    var admin_alert_cur_page = 1;
+    function admin_alert_refresh_timer_stop() {
+        if (admin_alert_timer != null) {
+            clearTimeout(admin_alert_timer);
+            console.log("clear timer");
+        }
+    }
+
+    function getpage(num) {
+
+        console.log("getpage %d", num);
+
+        //如果定时器存在，则先取消它，避免定时到后，也发送请求。
+        if (admin_alert_timer != null) {
+            clearTimeout(admin_alert_timer);
+            //console.log("clear timer");
+        }
+
+        //异步获取数据
+        var url = "listalert.html";
+        var request = $.ajax({
+            url: url,
+            method: "POST",
+            data: {page: num, keywords: $("#searchForm #keywords").val()},
+        });
+
+        request.done(function (html) {
+
+            admin_alert_cur_page = num;
+            var content = $(html);
+            content.find(".dataTables_paginate ").find("a").each(function () {
+                console.log("---");
+                var href = $(this).prop("href");
+                var pos = href.lastIndexOf("=");
+                var page = parseInt(href.substring(pos + 1));
+                $(this).attr({href: "#", onclick: "getpage(" + page + ")"});
+            });
+
+            //insert tbody
+            $("#j-alert-table tbody").remove();
+            $("#j-alert-table thead").after(content.find("tbody"));
+
+            //insert box footer, paginate
+            $("#j-alert-box .box-footer").remove();
+            $("#j-alert-box .box-body").after(content.filter(".box-footer"));
+
+            //如果有错误信息，则放到table后面
+            $("#load-cloud-data-error").remove();
+            $("#j-alert-table").after(content.filter("#load-cloud-data-error"));
+
+            admin_alert_timer = setTimeout(function () {
+                console.log("timer out");
+                getpage(admin_alert_cur_page);
+            }, 4000);
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //alert("Request failed: " + textStatus);
+            console.log("fail!!!!!");
+        });
+    }
+
+
+    $(function () {
+        //异步获取数据
+        getpage(1);
+
+        //绑定搜索click事件
+        $(".form-group #alert-search").click(function () {
+            getpage(1);
+            return false;
+        });
+
+        $(".form-group #alert-clear-search").click(function () {
+            //reset
+            $("#searchForm #keywords").val("");
+            getpage(1);
+            return false;
+        });
+
+        //绑定对话框显示事件，取消定时获取数据timer，避免timer不断refresh 界面。
+        $('#device-send-command-dialog').on('show.bs.modal', function () {
+            if (admin_alert_timer != null) {
+                clearTimeout(admin_alert_timer);
+                console.log("clear timer");
+            }
+        });
+
+        //绑定对话框退出事件，重启定时获取数据timer
+        $('#device-send-command-dialog').on('hide.bs.modal', function () {
+            console.log("restart timer");
+            admin_alert_timer = setTimeout(function () {
+                getpage(admin_alert_cur_page);
+            }, 4000);
+        });
+
+    });
+
+
+</script>
+
+<script src="__STATIC__/js/device_send_command.js"></script>
